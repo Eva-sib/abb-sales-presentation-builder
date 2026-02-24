@@ -45,6 +45,12 @@ st.markdown("---")
 # Initialize session state
 if 'form_submitted' not in st.session_state:
     st.session_state.form_submitted = False
+if 'form_data' not in st.session_state:
+    st.session_state.form_data = None
+if 'json_str' not in st.session_state:
+    st.session_state.json_str = None
+if 'json_filename' not in st.session_state:
+    st.session_state.json_filename = None
 
 # Progress indicator
 if not st.session_state.form_submitted:
@@ -167,13 +173,14 @@ with st.form("presentation_form"):
     
     st.markdown("---")
     
-    # Submit button
+    # Submit button (INSIDE THE FORM)
     col_btn1, col_btn2, col_btn3 = st.columns([1, 2, 1])
     with col_btn2:
         submitted = st.form_submit_button("✅ Generate Presentation Input File", 
                                          use_container_width=True,
                                          type="primary")
     
+    # Process form submission
     if submitted:
         # Validate required fields
         if not customer_name or not language or not industry or not context:
@@ -217,7 +224,7 @@ with st.form("presentation_form"):
                 }
             }
             
-            # Save to JSON file
+            # Save to session state
             json_filename = f"presentation_input_{customer_name.replace(' ', '_')}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
             json_str = json.dumps(form_data, indent=4)
             
@@ -225,53 +232,64 @@ with st.form("presentation_form"):
             st.session_state.form_data = form_data
             st.session_state.json_str = json_str
             st.session_state.json_filename = json_filename
-            
-            st.success("✅ **Input file created successfully!**")
-            st.balloons()
-            
-            # Display summary
-            st.markdown("### 📋 Summary of Your Input:")
-            
-            col_sum1, col_sum2 = st.columns(2)
-            
-            with col_sum1:
-                st.markdown("**Customer Information:**")
-                st.write(f"• Customer: {customer_name}")
-                st.write(f"• Channel: {channel if channel else 'Not specified'}")
-                st.write(f"• Country: {country if country else 'Not specified'}")
-                st.write(f"• Project: {project_title if project_title else 'Not specified'}")
-                st.write(f"• Language: {language}")
-            
-            with col_sum2:
-                st.markdown("**Meeting Details:**")
-                st.write(f"• Industry: {industry}")
-                st.write(f"• Application: {application if application else 'Not specified'}")
-                st.write(f"• Context: {context}")
-                st.write(f"• Buyer Personas: {', '.join(buyer_persona) if buyer_persona else 'Not specified'}")
-            
-            st.markdown("---")
-            
-            # Download button
-            st.download_button(
-                label="📥 Download Input File (JSON)",
-                data=json_str,
-                file_name=json_filename,
-                mime="application/json",
-                use_container_width=True
-            )
-            
-            st.markdown("---")
-            st.info("""
-            👉 **Next Steps:**
-            1. Download the JSON file above
-            2. Share it with your ABB AI assistant
-            3. The AI will create your customized presentation
-            4. Review and refine as needed
-            """)
-            
-            # Option to view full JSON
-            with st.expander("🔍 View Full JSON Data"):
-                st.json(form_data)
+
+# OUTSIDE THE FORM - Display results and download button
+if st.session_state.form_submitted:
+    st.success("✅ **Input file created successfully!**")
+    st.balloons()
+    
+    # Display summary
+    st.markdown("### 📋 Summary of Your Input:")
+    
+    col_sum1, col_sum2 = st.columns(2)
+    
+    with col_sum1:
+        st.markdown("**Customer Information:**")
+        st.write(f"• Customer: {st.session_state.form_data['customer_info']['customer_name']}")
+        st.write(f"• Channel: {st.session_state.form_data['customer_info']['channel']}")
+        st.write(f"• Country: {st.session_state.form_data['customer_info']['country']}")
+        st.write(f"• Project: {st.session_state.form_data['customer_info']['project_title']}")
+        st.write(f"• Language: {st.session_state.form_data['customer_info']['language']}")
+    
+    with col_sum2:
+        st.markdown("**Meeting Details:**")
+        st.write(f"• Industry: {st.session_state.form_data['industry_application']['industry_segment']}")
+        st.write(f"• Application: {st.session_state.form_data['industry_application']['specific_application']}")
+        st.write(f"• Context: {st.session_state.form_data['meeting_context']}")
+        personas = st.session_state.form_data['buyer_persona']
+        st.write(f"• Buyer Personas: {', '.join(personas) if personas and personas != ['Not specified'] else 'Not specified'}")
+    
+    st.markdown("---")
+    
+    # Download button (NOW OUTSIDE THE FORM - THIS FIXES THE ERROR!)
+    st.download_button(
+        label="📥 Download Input File (JSON)",
+        data=st.session_state.json_str,
+        file_name=st.session_state.json_filename,
+        mime="application/json",
+        use_container_width=True
+    )
+    
+    st.markdown("---")
+    st.info("""
+    👉 **Next Steps:**
+    1. Download the JSON file above
+    2. Share it with your ABB AI assistant
+    3. The AI will create your customized presentation
+    4. Review and refine as needed
+    """)
+    
+    # Option to view full JSON
+    with st.expander("🔍 View Full JSON Data"):
+        st.json(st.session_state.form_data)
+    
+    # Reset button
+    if st.button("🔄 Create Another Presentation", use_container_width=True):
+        st.session_state.form_submitted = False
+        st.session_state.form_data = None
+        st.session_state.json_str = None
+        st.session_state.json_filename = None
+        st.rerun()
 
 # Instructions sidebar
 st.sidebar.header("ℹ️ How to Use")
