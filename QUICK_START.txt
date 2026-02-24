@@ -1,0 +1,47 @@
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║           ABB SALES PRESENTATION BUILDER                             ║
+║           Streamlit Cloud Deployment - Quick Start                   ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+📦 FILES CREATED:
+  ✅ interface.py          - Main Streamlit application
+  ✅ requirements.txt      - Python dependencies
+  ✅ config.toml          - Streamlit configuration
+  ✅ README.md            - Complete documentation
+
+🚀 DEPLOYMENT STEPS (10 minutes):
+
+1️⃣  CREATE GITHUB REPOSITORY
+    • Go to github.com
+    • Click "+" → "New repository"
+    • Name: abb-sales-presentation-builder
+    • Visibility: Private (recommended)
+    • Click "Create repository"
+
+2️⃣  UPLOAD FILES
+    • Click "Add file" → "Upload files"
+    • Upload: interface.py, requirements.txt, README.md
+    • Create folder: .streamlit/config.toml
+    • Commit changes
+
+3️⃣  DEPLOY TO STREAMLIT CLOUD
+    • Go to share.streamlit.io
+    • Sign in with GitHub
+    • Click "New app"
+    • Select your repository
+    • Main file: interface.py
+    • Click "Deploy!"
+
+4️⃣  GET YOUR URL
+    • Wait 2-3 minutes
+    • Get URL: https://your-app-name.streamlit.app
+    • Share with your team!
+
+📧 NEED HELP?
+   Contact: eva.de-quintana@es.abb.com
+
+🎉 That's it! Your app will be live and accessible from anywhere!
+
